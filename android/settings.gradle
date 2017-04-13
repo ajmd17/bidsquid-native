@@ -1,0 +1,3 @@
+rootProject.name = 'BidSquidNative'
+
+include ':app'
