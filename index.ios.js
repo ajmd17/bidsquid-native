@@ -11,6 +11,7 @@ import {
   NavigatorIOS,
   StyleSheet,
   Text,
+  TextInput,
   TouchableHighlight,
   View
 } from 'react-native';
@@ -33,6 +34,7 @@ const styles = StyleSheet.create({
   },
   tabItem: {
     fontSize: 12,
+    fontFamily: 'Futura-Medium',
     color: '#485a69'
   },
   tabItemSelected: {
@@ -50,10 +52,13 @@ const styles = StyleSheet.create({
   },
 
   navigationBar: {
-    backgroundColor: '#0ab498'
+    backgroundColor: '#4285f4'
   },
   navTitle: {
     color: '#fff', // changing navbar title color
+    
+    paddingTop: 20,
+    paddingBottom: 20
   },
   routerScene: {
     paddingTop: Navigator.NavigationBar.Styles.General.NavBarHeight, // some navbar padding to avoid content overlap
@@ -91,9 +96,15 @@ export default class NavigatorIOSApp extends Component {
     return (
       <View style={styles.container}>
         <NavigationBar
-          title={{ title: route.title, tintColor: '#fff' }}
+          title={{
+            title: 'Haystack',
+            tintColor: '#fff',
+            style: {
+              fontFamily: 'GillSans-Italic',
+              fontSize: 28
+            }
+          }}
           style={styles.navigationBar}
-          tintColor='#0ab498'
         />
         
         {(() => {
@@ -128,7 +139,9 @@ export default class NavigatorIOSApp extends Component {
           selected={this.state.page}
           style={styles.itemTabbar}
           selectedStyle={styles.tabItemSelected}
-          style={{ backgroundColor: '#fff' }}
+          style={{
+            backgroundColor: '#fff',
+          }}
           onSelect={(el) => {
             this.setState({
               page: el.props.name

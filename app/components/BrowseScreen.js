@@ -3,7 +3,7 @@ import { Button, Text, View } from 'react-native';
 import NavigationBar from 'react-native-navbar';
 
 import Categories from '../categories/components/Categories';
-
+import Buy from '../buy/components/Buy';
 
 class BrowseScreen extends Component {
   static navigationOptions = {
@@ -12,7 +12,7 @@ class BrowseScreen extends Component {
 
   render() {
     return (
-      <Categories/>
+      <Buy/>
     );
   }
 }
