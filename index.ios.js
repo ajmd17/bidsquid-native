@@ -15,9 +15,11 @@ import {
   TouchableHighlight,
   View
 } from 'react-native';
+import Button from 'react-native-button';
 import Tabs from 'react-native-tabs';
 import NavigationBar from 'react-native-navbar';
 
+import events from './app/events';
 import BrowseScreen from './app/components/BrowseScreen';
 import AlertsScreen from './app/components/AlertsScreen';
 import TransactionsScreen from './app/components/TransactionsScreen';
@@ -38,7 +40,7 @@ const styles = StyleSheet.create({
     color: '#485a69'
   },
   tabItemSelected: {
-    color: '#0ab498'
+    color: '#4285f4'
   },
   welcome: {
     fontSize: 20,
@@ -65,7 +67,6 @@ const styles = StyleSheet.create({
   },
 });
 
-
 const routes = [{
   name: 'browse',
   title: 'Browse',
@@ -88,11 +89,56 @@ export default class NavigatorIOSApp extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      page: 'browse'
+      page: 'browse',
+      goBackCallbacks: []
     };
   }
+
+  componentDidMount() {
+    this.goBackListener = events.addListener('open page', (goBackCallback) => {
+      this.setState({
+        goBackCallbacks: this.state.goBackCallbacks.concat([goBackCallback])
+      });
+    });
+  }
+
+  componentWillUnmount() {
+    this.goBackListener.remove();
+  }
   
-  renderScene(route, nav) {
+  renderScene = (route, nav) => {
+    let leftButton;
+    if (this.state.goBackCallbacks.length != 0) {
+      leftButton = (
+        <View style={{
+        }}>
+        <Button
+          onPress={((cb) => {
+            cb();
+            this.setState({
+              // chop last item (pop)
+              goBackCallbacks: this.state.goBackCallbacks.slice(0, this.state.goBackCallbacks.length - 1)
+            });
+          }).bind(this, this.state.goBackCallbacks[this.state.goBackCallbacks.length - 1])}
+
+          containerStyle={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            paddingHorizontal: 10,
+          }}
+          style={{
+            
+            fontFamily: 'Futura',
+            fontSize: 16,
+            color: '#fff'
+          }}>
+          Back
+        </Button>
+        </View>
+      );
+    }
+
     return (
       <View style={styles.container}>
         <NavigationBar
@@ -104,6 +150,7 @@ export default class NavigatorIOSApp extends Component {
               fontSize: 28
             }
           }}
+          leftButton={leftButton}
           style={styles.navigationBar}
         />
         
@@ -120,7 +167,7 @@ export default class NavigatorIOSApp extends Component {
         })()}
       </View>
     );
-  }
+  };
 
   render() {
     return (
