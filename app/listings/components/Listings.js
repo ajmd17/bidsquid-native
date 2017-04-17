@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import {
+  ActivityIndicator,
   ScrollView,
   StyleSheet,
   Text,
@@ -9,26 +10,43 @@ import {
 } from 'react-native';
 import Button from 'react-native-button';
 
+import AddListingModal from '../../add-listing/components/AddListingModal';
+import ListingItem from './ListingItem';
+
 import config from '../../config';
 
 
 class Listings extends Component {
   static propTypes = {
-    market: React.PropTypes.object.isRequired
+    market: React.PropTypes.object.isRequired,
+    geo: React.PropTypes.object.isRequired
   };
 
   constructor(props) {
     super(props);
     this.state = {
-      listings: null
+      listings: null,
+      showingAddListingModal: false
     };
   }
 
   componentDidMount() {
+    const queryParams = {
+      latitude: this.props.geo.geo[0],
+      longitude: this.props.geo.geo[1],
+      distanceKm: 50
+    };
+
+    const queryString = Object.keys(queryParams)
+    .map((key) => encodeURIComponent(key) + '=' + encodeURIComponent(queryParams[key]))
+    .join('&')
+    .replace(/%20/g, '+');
+
     // fetch markets
-    fetch(`${config.API_SERVER_URL}/api/markets/${this.props.market._id}/listings`)
+    fetch(`${config.API_SERVER_URL}/api/markets/${this.props.market._id}/listings?${queryString}`)
     .then((response) => response.json())
     .then((json) => {
+      console.log('got listings:', json);
       this.setState({
         listings: json.offers
       });
@@ -42,7 +60,37 @@ class Listings extends Component {
     
   };
 
-  
+  renderAddListingModal() {
+    if (this.state.showingAddListingModal) {
+      return (
+        <AddListingModal
+          onAcceptPress={() => {
+
+          }}
+          onModalClose={() => {
+            this.setState({ showingAddListingModal: false });
+          }}
+        />
+      );
+    }
+  }
+
+  renderListings() {
+    if (this.state.listings != null) {
+      return (
+        <ScrollView>
+          {this.state.listings.map((el, i) => {
+            return (
+              <ListingItem
+                listing={el}
+                key={i}
+              />
+            );
+          })}
+        </ScrollView>
+      );
+    }
+  }
 
   render() {
     return (
@@ -70,6 +118,9 @@ class Listings extends Component {
 
 
           <Button
+            onPress={() => {
+              this.setState({ showingAddListingModal: true });
+            }}
             containerStyle={{
               flex: 0,
               justifyContent: 'center',
@@ -92,7 +143,7 @@ class Listings extends Component {
           fontFamily: 'Futura',
           fontSize: 15,
         }}>
-          near Sydney, NS
+          {this.props.geo.name}, {this.props.geo.provinceCode}
         </Text>
 
         <TextInput
@@ -118,6 +169,14 @@ class Listings extends Component {
           value={this.state.searchValue}
           placeholder='Search listings...'
         />
+
+        <ActivityIndicator
+          animating={this.state.listings == null}
+          size='large'
+        />
+
+        {this.renderAddListingModal()}
+        {this.renderListings()}
       </View>
     );
   }

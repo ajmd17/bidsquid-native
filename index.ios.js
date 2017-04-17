@@ -10,6 +10,7 @@ import {
   Navigator,
   NavigatorIOS,
   StyleSheet,
+  StatusBar,
   Text,
   TextInput,
   TouchableHighlight,
@@ -54,7 +55,7 @@ const styles = StyleSheet.create({
   },
 
   navigationBar: {
-    backgroundColor: '#4285f4'
+    backgroundColor: '#485a69',
   },
   navTitle: {
     color: '#fff', // changing navbar title color
@@ -152,6 +153,10 @@ export default class NavigatorIOSApp extends Component {
           }}
           leftButton={leftButton}
           style={styles.navigationBar}
+          statusBar={{
+            tintColor: '#485a69',
+            style: 'light-content'
+          }}
         />
         
         {(() => {

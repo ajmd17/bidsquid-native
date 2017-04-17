@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import {
+  ActivityIndicator,
   Button,
   ScrollView,
   StyleSheet,
@@ -18,7 +19,8 @@ import config from '../../config';
 
 class Markets extends Component {
   static propTypes = {
-    category: React.PropTypes.object.isRequired
+    category: React.PropTypes.object.isRequired,
+    geo: React.PropTypes.object.isRequired
   };
 
   constructor(props) {
@@ -92,7 +94,10 @@ class Markets extends Component {
       switch (this.state.viewMode) {
         case 'listings':
           return (
-            <Listings market={this.state.markets[this.state.openedId]}/>
+            <Listings
+              market={this.state.markets[this.state.openedId]}
+              geo={this.props.geo}
+            />
           );
       }
     }
@@ -118,7 +123,7 @@ class Markets extends Component {
           fontFamily: 'Futura',
           fontSize: 15,
         }}>
-          near Sydney, NS
+          {this.props.geo.name}, {this.props.geo.provinceCode}
         </Text>
 
         <TextInput
@@ -143,6 +148,11 @@ class Markets extends Component {
           onChangeText={(text) => this.setState({ searchValue: text })}
           value={this.state.searchValue}
           placeholder='Search markets by name...'
+        />
+
+        <ActivityIndicator
+          animating={this.state.markets == null}
+          size='large'
         />
 
         {/*<View style={{

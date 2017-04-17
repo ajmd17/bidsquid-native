@@ -26,7 +26,7 @@ class Category extends Component {
                   marginVertical: 2,
                   fontFamily: 'Futura',
                   fontSize: 20,
-                  color: '#4285f4',
+                  color: '#0ab498',
                 }}>
                   {el.name}
                 </Text>
@@ -40,45 +40,43 @@ class Category extends Component {
 
   render() {
     return (
-      <TouchableOpacity onPress={() => this.handlePress(this.props.category)}>
+      <View style={{
+        borderWidth: 1,
+        borderColor: '#eee',
+        borderRadius: 3,
+        marginHorizontal: 10,
+        marginVertical: 8,
+        backgroundColor: '#fff',
+        shadowColor: '#b1bbd0',
+        shadowOffset: {
+          width: 0,
+          height: 4
+        },
+        shadowRadius: 2,
+        shadowOpacity: 0.9,
+        overflow: 'scroll'
+      }}>
+
         <View style={{
-          borderWidth: 1,
-          borderColor: '#eee',
-          borderRadius: 3,
-          marginHorizontal: 10,
-          marginVertical: 8,
-          backgroundColor: '#fff',
-          shadowColor: '#b1bbd0',
-          shadowOffset: {
-            width: 0,
-            height: 4
-          },
-          shadowRadius: 2,
-          shadowOpacity: 0.9,
-          overflow: 'scroll'
+
+          borderBottomWidth: 1,
+          borderBottomColor: '#eee',
         }}>
-
-          <View style={{
-
-            borderBottomWidth: 1,
-            borderBottomColor: '#eee',
+          <Text style={{
+            paddingVertical: 5,
+            paddingHorizontal: 10,
+            fontSize: 24,
+            fontFamily: 'Futura',
+            color: '#fff',
+            backgroundColor: '#0ab498'
           }}>
-            <Text style={{
-              paddingVertical: 5,
-              paddingHorizontal: 10,
-              fontSize: 24,
-              fontFamily: 'Futura',
-              color: '#485a69',
-              backgroundColor: '#fff'
-            }}>
-              {this.props.category.name}
-            </Text>
-          </View>
-
-          {this.renderSubcategories()}
-          
+            {this.props.category.name}
+          </Text>
         </View>
-      </TouchableOpacity>
+
+        {this.renderSubcategories()}
+        
+      </View>
     );
   }
 }

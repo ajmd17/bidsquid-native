@@ -31,7 +31,7 @@ class MarketItem extends Component {
   componentWillReceiveProps(newProps) {
     if (newProps.isDrawerOpen != this.props.isDrawerOpen) {
       Animated.timing(this.state.panelHeight, {
-        toValue: newProps.isDrawerOpen ? 120 : 0,
+        toValue: newProps.isDrawerOpen ? 135 : 0,
         duration: 200
       }).start();
       Animated.timing(this.state.panelOpacity, {
@@ -62,16 +62,16 @@ class MarketItem extends Component {
           <Button
             onPress={this.handleViewListingsPress}
             containerStyle={{
-              marginVertical: 2,
+              marginVertical: 4,
               padding: 5,
               borderRadius: 3,
               borderWidth: 1,
-              borderColor: '#77c350',
-              backgroundColor: '#77c350'
+              borderColor: '#0ab498',
+              backgroundColor: '#0ab498'
             }}
             style={{
               fontFamily: 'Futura',
-              fontSize: 16,
+              fontSize: 18,
               color: '#fff'
             }}>
             View Listings
@@ -79,17 +79,17 @@ class MarketItem extends Component {
 
           <Button
             containerStyle={{
-              marginVertical: 2,
+              marginVertical: 4,
               padding: 5,
               borderRadius: 3,
               borderWidth: 1,
-              borderColor: '#4285f4',
+              borderColor: '#0ab498',
               backgroundColor: '#fff'
             }}
             style={{
               fontFamily: 'Futura',
-              fontSize: 16,
-              color: '#4285f4'
+              fontSize: 18,
+              color: '#0ab498'
             }}>
             Add to Watchlist
           </Button>
@@ -97,17 +97,17 @@ class MarketItem extends Component {
           
           <Button
             containerStyle={{
-              marginVertical: 2,
+              marginVertical: 4,
               padding: 5,
               borderRadius: 3,
               borderWidth: 1,
-              borderColor: '#4285f4',
+              borderColor: '#0ab498',
               backgroundColor: '#fff'
             }}
             style={{
               fontFamily: 'Futura',
-              fontSize: 16,
-              color: '#4285f4'
+              fontSize: 18,
+              color: '#0ab498'
             }}>
             Discussion Board
           </Button>
@@ -137,14 +137,16 @@ class MarketItem extends Component {
         }}>
 
           <View style={{
+            backgroundColor: '#0ab498',
             borderBottomWidth: 1,
             borderBottomColor: '#eee',
-            padding: 10
+            paddingVertical: 5,
+            paddingHorizontal: 10,
           }}>
             <Text style={{
-              fontSize: 26,
+              fontSize: 24,
               fontFamily: 'Futura',
-              color: '#4285f4'
+              color: '#fff'
             }}>
               {this.props.market.name}
             </Text>

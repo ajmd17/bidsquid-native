@@ -1,17 +1,21 @@
 import React, { Component } from 'react';
 import {
   ActivityIndicator,
-  Button,
+  AsyncStorage,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
   TouchableHighlight,
+  TouchableWithoutFeedback,
   View
 } from 'react-native';
+import Modal from 'react-native-modal';
+import Button from 'react-native-button';
 
 import Category from './Category';
 import Markets from '../../markets/components/Markets';
+import ProvideLocationModal from '../../provide-location/components/ProvideLocationModal';
 
 import events from '../../events';
 import config from '../../config';
@@ -23,7 +27,11 @@ class Categories extends Component {
     this.state = {
       categories: null,
       selectedCategory: null,
-      searchValue: ''
+      geo: null,
+      searchValue: '',
+      locationModal: {
+        showing: false
+      }
     };
   }
 
@@ -42,9 +50,45 @@ class Categories extends Component {
   }
 
   handleCategoryPress = (category) => {
-    this.setState({ selectedCategory: category });
+    AsyncStorage.getItem('saved geo')
+    .then(JSON.parse)
+    .then((json) => {
+      console.log('got saved geo:', json);
+      if (json == null) {
+        this.setState({
+          locationModal: {
+            showing: true,
+            categoryToOpenAfter: category
+          }
+        });
+      } else {
+        this.setState({
+          selectedCategory: category,
+          geo: json
+        });
+        events.emit('open page', () => {
+          this.setState({ selectedCategory: null });
+        });
+      }
+    })
+    .catch((err) => {
+      console.error('Error loading saved geo:', err);
+    });
+    
+    /*this.setState({ selectedCategory: category });
     events.emit('open page', () => {
       this.setState({ selectedCategory: null });
+    });*/
+  };
+
+  handlePostalCodeChange = (text) => {
+    // lookup on server if validated
+    let newState = {};
+
+
+    this.setState({
+      ...newState,
+      postalCodeValue: text
     });
   };
 
@@ -66,11 +110,47 @@ class Categories extends Component {
     }
   }
 
+  renderLocationModal() {
+    if (this.state.locationModal.showing) {
+      return (
+        <ProvideLocationModal
+          onAcceptLocation={(place) => {
+            console.log('place:', place);
+            AsyncStorage.setItem('saved geo', JSON.stringify(place)).then((res) => {
+              if (this.state.locationModal.categoryToOpenAfter != null) {
+                this.setState({
+                  selectedCategory: this.state.locationModal.categoryToOpenAfter,
+                  locationModal: {
+                    showing: false
+                  } 
+                });
+                events.emit('open page', () => {
+                  this.setState({ selectedCategory: null });
+                });
+              } else {
+                this.setState({ locationModal: { showing: false } });
+              }
+            }).catch((err) => {
+              console.error('Error saving geo:', err);
+            });
+          }}
+          onModalClose={() => {
+            this.setState({ locationModal: { showing: false } });  
+          }}
+        />
+      );
+    }
+  }
+
   render() {
-    if (this.state.selectedCategory != null) {
+
+    if (this.state.selectedCategory != null && this.state.geo != null) {
       // render market view if a category is selected.
       return (
-        <Markets category={this.state.selectedCategory}/>
+        <Markets
+          category={this.state.selectedCategory}
+          geo={this.state.geo}
+        />
       );
     }
 
@@ -119,6 +199,8 @@ class Categories extends Component {
         />
 
         {this.renderCategories()}
+
+        {this.renderLocationModal()}
       </View>
     );
   }
