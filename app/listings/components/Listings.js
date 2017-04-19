@@ -64,8 +64,11 @@ class Listings extends Component {
     if (this.state.showingAddListingModal) {
       return (
         <AddListingModal
-          onAcceptPress={() => {
-
+          onAdded={(listing) => {
+            this.setState({
+              showingAddListingModal: false,
+              listings: (this.state.listings || []).concat([listing])
+            });
           }}
           onModalClose={() => {
             this.setState({ showingAddListingModal: false });
@@ -170,10 +173,12 @@ class Listings extends Component {
           placeholder='Search listings...'
         />
 
-        <ActivityIndicator
-          animating={this.state.listings == null}
-          size='large'
-        />
+        {this.state.listings == null
+          ? <ActivityIndicator
+              animating
+              size='large'
+            />
+          : null}
 
         {this.renderAddListingModal()}
         {this.renderListings()}

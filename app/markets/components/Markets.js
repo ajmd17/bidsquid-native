@@ -12,6 +12,7 @@ import {
 
 import MarketItem from './MarketItem';
 import Listings from '../../listings/components/Listings';
+import Topics from '../../discussion-board/components/Topics';
 
 import events from '../../events';
 import config from '../../config';
@@ -27,7 +28,7 @@ class Markets extends Component {
     super(props);
     this.state = {
       markets: null,
-      selectedMarket: null,
+      currentMarket: null,
       viewMode: null, // 'listings', 'board'
       searchValue: '',
       openedId: null, // the id of a currently open market item
@@ -60,11 +61,31 @@ class Markets extends Component {
 
   handleViewListingsPress = (market) => {
     this.setState({
+      currentMarket: market,
       viewMode: 'listings'
     });
 
     events.emit('open page', () => {
-      this.setState({ openedId: null, viewMode: null });
+      this.setState({
+        openedId: null,
+        currentMarket: null,
+        viewMode: null
+      });
+    });
+  };
+
+  handleDiscussionBoardPress = (market) => {
+    this.setState({
+      currentMarket: market,
+      viewMode: 'topics'
+    });
+
+    events.emit('open page', () => {
+      this.setState({
+        openedId: null,
+        currentMarket: null,
+        viewMode: null
+      });
     });
   };
 
@@ -80,6 +101,7 @@ class Markets extends Component {
                   this.state.openedId == i}
                 onPress={() => this.handleMarketPress(i)}
                 onViewListingsPress={() => this.handleViewListingsPress(el)}
+                onDiscussionBoardPress={() => this.handleDiscussionBoardPress(el)}
                 key={i}
               />
             );
@@ -95,7 +117,14 @@ class Markets extends Component {
         case 'listings':
           return (
             <Listings
-              market={this.state.markets[this.state.openedId]}
+              market={this.state.currentMarket}
+              geo={this.props.geo}
+            />
+          );
+        case 'topics':
+          return (
+            <Topics
+              market={this.state.currentMarket}
               geo={this.props.geo}
             />
           );
@@ -150,10 +179,12 @@ class Markets extends Component {
           placeholder='Search markets by name...'
         />
 
-        <ActivityIndicator
-          animating={this.state.markets == null}
-          size='large'
-        />
+        {this.state.markets == null
+          ? <ActivityIndicator
+              animating
+              size='large'
+            />
+          : null}
 
         {/*<View style={{
           flex: 1,

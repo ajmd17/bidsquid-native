@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
   },
 
   navigationBar: {
-    backgroundColor: '#485a69',
+    backgroundColor: '#0ab498',
   },
   navTitle: {
     color: '#fff', // changing navbar title color
@@ -154,7 +154,7 @@ export default class NavigatorIOSApp extends Component {
           leftButton={leftButton}
           style={styles.navigationBar}
           statusBar={{
-            tintColor: '#485a69',
+            tintColor: '#0ab498',
             style: 'light-content'
           }}
         />

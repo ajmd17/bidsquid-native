@@ -95,7 +95,9 @@ class Categories extends Component {
   renderCategories() {
     if (this.state.categories != null) {
       return (
-        <ScrollView>
+        <ScrollView style={{
+          backgroundColor: '#f7f8fa'
+        }}>
           {this.state.categories.map((el, i) => {
             return (
               <Category
@@ -193,10 +195,12 @@ class Categories extends Component {
           placeholder='Search categories by name...'
         />
 
-        <ActivityIndicator
-          animating={this.state.categories == null}
-          size='large'
-        />
+        {this.state.categories == null
+          ? <ActivityIndicator
+              animating
+              size='large'
+            />
+          : null}
 
         {this.renderCategories()}
 

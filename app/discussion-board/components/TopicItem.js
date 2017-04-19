@@ -11,9 +11,9 @@ import {
 } from 'react-native';
 
 
-class ListingItem extends Component {
+class TopicItem extends Component {
   static propTypes = {
-    listing: React.PropTypes.object.isRequired,
+    topic: React.PropTypes.object.isRequired,
     onPress: React.PropTypes.func.isRequired
   };
 
@@ -38,7 +38,6 @@ class ListingItem extends Component {
         shadowOpacity: 0.9,
         overflow: 'scroll'
       }}>
-
         <View style={{
           borderBottomWidth: 1,
           borderBottomColor: '#eee',
@@ -50,31 +49,12 @@ class ListingItem extends Component {
             fontFamily: 'Futura',
             color: '#0ab498'
           }}>
-            {this.props.listing.title}
+            {this.props.topic.title}
           </Text>
-
-          <View style={{
-            padding: 10
-          }}>
-            <Text style={{
-              fontSize: 18,
-              fontFamily: 'Futura',
-              color: '#485a69'
-            }}>
-              Price: ${this.props.listing.price}
-            </Text>
-            <Text style={{
-              fontSize: 18,
-              fontFamily: 'Futura',
-              color: '#485a69'
-            }}>
-              Available Quantity: {this.props.listing.availQty}
-            </Text>
-          </View>
         </View>
       </View>
     );
   }
 }
 
-export default ListingItem;
+export default TopicItem;

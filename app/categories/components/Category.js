@@ -43,7 +43,6 @@ class Category extends Component {
       <View style={{
         borderWidth: 1,
         borderColor: '#eee',
-        borderRadius: 3,
         marginHorizontal: 10,
         marginVertical: 8,
         backgroundColor: '#fff',
@@ -67,8 +66,8 @@ class Category extends Component {
             paddingHorizontal: 10,
             fontSize: 24,
             fontFamily: 'Futura',
-            color: '#fff',
-            backgroundColor: '#0ab498'
+            color: '#86929b',
+            backgroundColor: '#fff'
           }}>
             {this.props.category.name}
           </Text>

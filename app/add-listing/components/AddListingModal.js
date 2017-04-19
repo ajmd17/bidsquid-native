@@ -20,15 +20,18 @@ import config from '../../config';
 
 class AddListingModal extends Component {
   static propTypes = {
-    onAcceptPress: React.PropTypes.func.isRequired,
+    marketId: React.PropTypes.string.isRequired,
+    onAdded: React.PropTypes.func.isRequired,
     onModalClose: React.PropTypes.func.isRequired
   };
 
   constructor(props) {
     super(props);
     this.state = {
+      titleValue: '',
       priceValue: '1.00',
       availQtyValue: null,
+      unitValue: null,
 
       selectedPriceOption: {
         label: 'Per Unit',
@@ -50,15 +53,54 @@ class AddListingModal extends Component {
     this.setState({ availQtyValue: text });
   };
 
+  handleUnitChange = (text) => {
+    this.setState({ unitValue: text });
+  };
+  
+  handleSubmitPress = () => {
+    fetch(`${config.API_SERVER_URL}/api/offers`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        marketId: this.props.marketId,
+        title: this.state.titleValue,
+        price: this.state.priceValue,
+        availQty: this.state.availQtyValue,
+        unit: this.state.unitValue
+      })
+    }).then((response) => response.json())
+    .then((json) => {
+      if (!json.error) {
+        console.log('added listing:', json);
+        this.props.onAdded(json.offer);
+      } else {
+        this.setState({
+          submitting: false,
+          submissionError: json.error
+        });
+      }
+    }).catch((err) => {
+      console.error('Error adding listing:', err);
+      this.setState({
+        submitting: false,
+        submissionError: err
+      });
+    });
+  };
+
   renderSubmissionError() {
     if (this.state.submissionError != null) {
       return (
         <Text style={{
           fontFamily: 'Futura',
-          fontSize: 18,
+          fontSize: 16,
           color: '#cb2431',
+          textAlign: 'center'
         }}>
-          {this.state.submissionError}
+          Submission Error: {this.state.submissionError}
         </Text>
       );
     }
@@ -148,7 +190,7 @@ class AddListingModal extends Component {
           </Button>
 
           <Button
-            onPress={this.props.onModalClose}
+            onPress={this.handleSubmitPress}
             containerStyle={{
               marginTop: 5,
               marginHorizontal: 10,
@@ -308,13 +350,38 @@ class AddListingModal extends Component {
               </View>
 
               {this.state.selectedPriceOption.value == 'perunit'
-                ? <View style={{
-                    flex: 0,
-                    flexDirection: 'row',
-                    justifyContent: 'center'
-                  }}>
-                    <FloatLabelTextInput
+                ? <View>
+                    <Text style={{
+                      textAlign: 'left',
+                      fontSize: 16,
+                      fontFamily: 'Futura',
+                      color: '#485a69'
+                    }}>
+                      Price
+                    </Text>
+                    
+                    <TextInput
+                      style={{
+                        flex: 0,
+                        height: 35,
+                        marginTop: 5,
+                        paddingHorizontal: 10,
+                        borderColor: '#eee',
+                        borderRadius: 4,
+                        backgroundColor: '#fff',
+                        shadowColor: '#b1bbd0',
+                        shadowOffset: {
+                          width: 0,
+                          height: 3
+                        },
+                        shadowRadius: 2,
+                        shadowOpacity: 0.3,
+                        fontFamily: 'Futura',
+                        color: '#485a69'
+                      }}
                       placeholder='Unit'
+                      value={this.state.unitValue}
+                      onChangeText={this.handleUnitChange}
                       autoCorrect={false}
                       autoCapitalize='none'
                       maxLength={10}

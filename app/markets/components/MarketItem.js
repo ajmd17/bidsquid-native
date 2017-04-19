@@ -17,7 +17,8 @@ class MarketItem extends Component {
     market: React.PropTypes.object.isRequired,
     isDrawerOpen: React.PropTypes.bool,
     onPress: React.PropTypes.func.isRequired,
-    onViewListingsPress: React.PropTypes.func.isRequired
+    onViewListingsPress: React.PropTypes.func.isRequired,
+    onDiscussionBoardPress: React.PropTypes.func.isRequired
   };
 
   constructor(props) {
@@ -47,6 +48,10 @@ class MarketItem extends Component {
 
   handleViewListingsPress = () => {
     this.props.onViewListingsPress();
+  };
+
+  handleDiscussionBoardPress = () => {
+    this.props.onDiscussionBoardPress();
   };
 
   renderButtons() {
@@ -96,6 +101,7 @@ class MarketItem extends Component {
 
           
           <Button
+            onPress={this.handleDiscussionBoardPress}
             containerStyle={{
               marginVertical: 4,
               padding: 5,
@@ -120,7 +126,6 @@ class MarketItem extends Component {
     return (
       <TouchableWithoutFeedback onPress={this.handlePress}>
         <View style={{
-          borderRadius: 3,
           borderWidth: 1,
           borderColor: '#eee',
           marginHorizontal: 10,
@@ -137,7 +142,7 @@ class MarketItem extends Component {
         }}>
 
           <View style={{
-            backgroundColor: '#0ab498',
+            backgroundColor: '#fff',
             borderBottomWidth: 1,
             borderBottomColor: '#eee',
             paddingVertical: 5,
@@ -146,7 +151,7 @@ class MarketItem extends Component {
             <Text style={{
               fontSize: 24,
               fontFamily: 'Futura',
-              color: '#fff'
+              color: '#86929b'
             }}>
               {this.props.market.name}
             </Text>
