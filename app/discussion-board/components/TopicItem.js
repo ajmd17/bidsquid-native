@@ -9,6 +9,9 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
+import TimeAgo from 'react-native-timeago';
+
+import config from '../../config';
 
 
 class TopicItem extends Component {
@@ -41,15 +44,18 @@ class TopicItem extends Component {
         <View style={{
           borderBottomWidth: 1,
           borderBottomColor: '#eee',
+          paddingVertical: 10,
+          paddingHorizontal: 10,
         }}>
           <Text style={{
-            paddingVertical: 5,
-            paddingHorizontal: 10,
             fontSize: 26,
-            fontFamily: 'Futura',
+            fontFamily: config.DEFAULT_FONT,
             color: '#0ab498'
           }}>
             {this.props.topic.title}
+          </Text>
+          <Text>
+            <TimeAgo time={this.props.topic.creationDate}/>
           </Text>
         </View>
       </View>

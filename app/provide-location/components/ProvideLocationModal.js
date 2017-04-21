@@ -43,7 +43,7 @@ class ProvideLocationModal extends Component {
     if (this.state.postalCodeError != null) {
       return (
         <Text style={{
-          fontFamily: 'Futura',
+          fontFamily: config.DEFAULT_FONT,
           fontSize: 18,
           color: '#cb2431',
         }}>
@@ -72,7 +72,7 @@ class ProvideLocationModal extends Component {
               backgroundColor: '#0ab498'
             }}
             style={{
-              fontFamily: 'Futura',
+              fontFamily: config.DEFAULT_FONT,
               fontSize: 20,
               color: '#fff'
             }}>
@@ -96,7 +96,7 @@ class ProvideLocationModal extends Component {
               backgroundColor: '#f2f2f2'
             }}
             style={{
-              fontFamily: 'Futura',
+              fontFamily: config.DEFAULT_FONT,
               fontSize: 16,
               color: '#485a69'
             }}>
@@ -128,7 +128,7 @@ class ProvideLocationModal extends Component {
               backgroundColor: '#f2f2f2'
             }}
             style={{
-              fontFamily: 'Futura',
+              fontFamily: config.DEFAULT_FONT,
               fontSize: 16,
               color: '#485a69'
             }}>
@@ -159,7 +159,7 @@ class ProvideLocationModal extends Component {
               }}>
             
               <Text style={{
-                fontFamily: 'Futura',
+                fontFamily: config.DEFAULT_FONT,
                 fontSize: 24,
                 color: '#485a69'
               }}>
@@ -168,7 +168,7 @@ class ProvideLocationModal extends Component {
               
               <Text style={{
                 marginVertical: 30,
-                fontFamily: 'Futura',
+                fontFamily: config.DEFAULT_FONT,
                 fontSize: 18,
                 color: '#485a69',
                 textAlign: 'center'
@@ -178,18 +178,15 @@ class ProvideLocationModal extends Component {
               
               <PostalCodeField
                 onPostalCodeChanged={(postalCode) => {
-
+                  console.log('onPostalCodeChanged:', postalCode);
                   this.setState({
                     foundPlace: null,
                     searching: postalCode.length == 3,
                     postalCodeError: null
                   });
-
-                  console.log('onPostalCodeChanged:', postalCode);
                 }}
                 onPostalCodeError={(err) => {
                   console.log('onPostalCodeError:', err);
-
                   this.setState({
                     foundPlace: null,
                     searching: false,
@@ -234,7 +231,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff'
   },
   modalButton: {
-    fontFamily: 'Futura',
+    fontFamily: config.DEFAULT_FONT,
     fontSize: 20,
     color: '#4285f4'
   },
@@ -248,7 +245,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#4285f4'
   },
   modalButtonPrimary: {
-    fontFamily: 'Futura',
+    fontFamily: config.DEFAULT_FONT,
     fontSize: 20,
     color: '#fff'
   }

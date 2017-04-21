@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { Button, ScrollView, StyleSheet, Text, TextInput, TouchableHighlight, TouchableOpacity, View } from 'react-native';
 
+import config from '../../config';
+
 
 class Category extends Component {
   static propTypes = {
@@ -24,7 +26,7 @@ class Category extends Component {
               <TouchableOpacity onPress={() => this.handlePress(el)} key={i}>
                 <Text style={{
                   marginVertical: 2,
-                  fontFamily: 'Futura',
+                  fontFamily: config.DEFAULT_FONT,
                   fontSize: 20,
                   color: '#0ab498',
                 }}>
@@ -65,7 +67,7 @@ class Category extends Component {
             paddingVertical: 5,
             paddingHorizontal: 10,
             fontSize: 24,
-            fontFamily: 'Futura',
+            fontFamily: config.DEFAULT_FONT,
             color: '#86929b',
             backgroundColor: '#fff'
           }}>

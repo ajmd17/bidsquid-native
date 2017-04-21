@@ -16,6 +16,7 @@ import config from '../config';
 
 class PostalCodeField extends Component {
   static propTypes = {
+    style: React.PropTypes.object,
     onPostalCodeChanged: React.PropTypes.func.isRequired,
     onPostalCodeError: React.PropTypes.func.isRequired,
     onPlaceFound: React.PropTypes.func.isRequired
@@ -101,14 +102,10 @@ class PostalCodeField extends Component {
       <TextInput
         style={{
           flex: 0,
-          flexDirection: 'row',
-          height: 50,
-          marginHorizontal: 10,
+          height: 40,
           paddingHorizontal: 10,
           borderColor: '#eee',
           borderRadius: 4,
-          borderBottomWidth: 5,
-          borderBottomColor: '#b1bbd0',
           backgroundColor: '#fff',
           shadowColor: '#b1bbd0',
           shadowOffset: {
@@ -117,10 +114,9 @@ class PostalCodeField extends Component {
           },
           shadowRadius: 2,
           shadowOpacity: 0.3,
-          fontFamily: 'Futura',
-          fontSize: 26,
-          textAlign: 'center',
+          fontFamily: config.DEFAULT_FONT,
           color: '#485a69',
+          ...(this.props.style || {})
         }}
         onChangeText={this.handlePostalCodeChange}
         value={this.state.postalCode}

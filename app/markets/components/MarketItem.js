@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import {
+  ActivityIndicator,
   Animated,
   Easing,
   StyleSheet,
@@ -10,6 +11,8 @@ import {
   View
 } from 'react-native';
 import Button from 'react-native-button';
+
+import config from '../../config';
 
 
 class MarketItem extends Component {
@@ -24,20 +27,36 @@ class MarketItem extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      numTopics: null,
       panelHeight: new Animated.Value(0),
       panelOpacity: new Animated.Value(0)
     };
+  }
+
+  componentDidMount() {
+    // fetch num topics, num listings
+    fetch(`${config.API_SERVER_URL}/api/markets/${this.props.market._id}/topics/count`)
+    .then((response) => response.json())
+    .then((json) => {
+      if (json.error != null) {
+        throw new Error(json.error);
+      }
+      this.setState({ numTopics: json.count });
+    })
+    .catch((err) => {
+      console.error('Error fetching topics count:', err);
+    });
   }
 
   componentWillReceiveProps(newProps) {
     if (newProps.isDrawerOpen != this.props.isDrawerOpen) {
       Animated.timing(this.state.panelHeight, {
         toValue: newProps.isDrawerOpen ? 135 : 0,
-        duration: 200
+        duration: 400
       }).start();
       Animated.timing(this.state.panelOpacity, {
         toValue: newProps.isDrawerOpen ? 1 : 0,
-        duration: 200
+        duration: 400
       }).start();
     }
   }
@@ -54,6 +73,31 @@ class MarketItem extends Component {
     this.props.onDiscussionBoardPress();
   };
 
+  renderContent() {
+    if (this.state.numTopics == null) {
+      return (
+        <ActivityIndicator animating size='small'/>
+      );
+    }
+
+    return (
+      <View style={{
+        padding: 10
+      }}>
+        <Text style={{
+          fontSize: 18,
+          fontFamily: config.DEFAULT_FONT,
+          color: '#485a69'
+        }}>
+          {this.state.numTopics == 1
+            ? '1 discussion topic'
+            : `${this.state.numTopics} discussion topics`}
+        </Text>
+        {this.renderButtons()}
+      </View>
+    );
+  }
+
   renderButtons() {
     return (
       <Animated.View style={{
@@ -69,20 +113,19 @@ class MarketItem extends Component {
             containerStyle={{
               marginVertical: 4,
               padding: 5,
-              borderRadius: 3,
               borderWidth: 1,
               borderColor: '#0ab498',
               backgroundColor: '#0ab498'
             }}
             style={{
-              fontFamily: 'Futura',
+              fontFamily: config.DEFAULT_FONT,
               fontSize: 18,
               color: '#fff'
             }}>
             View Listings
           </Button>
 
-          <Button
+          {/*<Button
             containerStyle={{
               marginVertical: 4,
               padding: 5,
@@ -92,12 +135,12 @@ class MarketItem extends Component {
               backgroundColor: '#fff'
             }}
             style={{
-              fontFamily: 'Futura',
+              fontFamily: config.DEFAULT_FONT,
               fontSize: 18,
               color: '#0ab498'
             }}>
             Add to Watchlist
-          </Button>
+          </Button>*/}
 
           
           <Button
@@ -105,13 +148,12 @@ class MarketItem extends Component {
             containerStyle={{
               marginVertical: 4,
               padding: 5,
-              borderRadius: 3,
               borderWidth: 1,
               borderColor: '#0ab498',
               backgroundColor: '#fff'
             }}
             style={{
-              fontFamily: 'Futura',
+              fontFamily: config.DEFAULT_FONT,
               fontSize: 18,
               color: '#0ab498'
             }}>
@@ -150,32 +192,14 @@ class MarketItem extends Component {
           }}>
             <Text style={{
               fontSize: 24,
-              fontFamily: 'Futura',
+              fontFamily: config.DEFAULT_FONT,
               color: '#86929b'
             }}>
               {this.props.market.name}
             </Text>
           </View>
 
-          <View style={{
-            padding: 10
-          }}>
-            <Text style={{
-              fontSize: 20,
-              fontFamily: 'Futura',
-              color: '#485a69'
-            }}>
-              {/*{this.props.numListings} active listings*/}
-            </Text>
-            <Text style={{
-              fontSize: 20,
-              fontFamily: 'Futura',
-              color: '#485a69'
-            }}>
-              {/*Best offer: {this.props.bestOffer}*/}
-            </Text>
-            {this.renderButtons()}
-          </View>
+          {this.renderContent()}
         </View>
       </TouchableWithoutFeedback>
     );

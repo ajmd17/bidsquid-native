@@ -20,7 +20,7 @@ import config from '../../config';
 
 class AddListingModal extends Component {
   static propTypes = {
-    marketId: React.PropTypes.string.isRequired,
+    market: React.PropTypes.object.isRequired,
     onAdded: React.PropTypes.func.isRequired,
     onModalClose: React.PropTypes.func.isRequired
   };
@@ -29,12 +29,13 @@ class AddListingModal extends Component {
     super(props);
     this.state = {
       titleValue: '',
-      priceValue: '1.00',
+      priceValue: '',
       availQtyValue: null,
-      unitValue: null,
 
       selectedPriceOption: {
-        label: 'Per Unit',
+        label: this.props.market.defaultUnit
+          ? `Per ${this.props.market.defaultUnit}`
+          : 'Each',
         value: 'perunit'
       },
 
@@ -52,10 +53,6 @@ class AddListingModal extends Component {
 
     this.setState({ availQtyValue: text });
   };
-
-  handleUnitChange = (text) => {
-    this.setState({ unitValue: text });
-  };
   
   handleSubmitPress = () => {
     fetch(`${config.API_SERVER_URL}/api/offers`, {
@@ -65,11 +62,11 @@ class AddListingModal extends Component {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        marketId: this.props.marketId,
+        marketId: this.props.market.id,
         title: this.state.titleValue,
         price: this.state.priceValue,
         availQty: this.state.availQtyValue,
-        unit: this.state.unitValue
+        unit: this.props.market.defaultUnit
       })
     }).then((response) => response.json())
     .then((json) => {
@@ -95,7 +92,7 @@ class AddListingModal extends Component {
     if (this.state.submissionError != null) {
       return (
         <Text style={{
-          fontFamily: 'Futura',
+          fontFamily: config.DEFAULT_FONT,
           fontSize: 16,
           color: '#cb2431',
           textAlign: 'center'
@@ -125,7 +122,7 @@ class AddListingModal extends Component {
               backgroundColor: '#0ab498'
             }}
             style={{
-              fontFamily: 'Futura',
+              fontFamily: config.DEFAULT_FONT,
               fontSize: 20,
               color: '#fff'
             }}>
@@ -149,7 +146,7 @@ class AddListingModal extends Component {
               backgroundColor: '#f2f2f2'
             }}
             style={{
-              fontFamily: 'Futura',
+              fontFamily: config.DEFAULT_FONT,
               fontSize: 16,
               color: '#485a69'
             }}>
@@ -182,7 +179,7 @@ class AddListingModal extends Component {
               backgroundColor: '#f2f2f2'
             }}
             style={{
-              fontFamily: 'Futura',
+              fontFamily: config.DEFAULT_FONT,
               fontSize: 16,
               color: '#485a69'
             }}>
@@ -202,7 +199,7 @@ class AddListingModal extends Component {
               backgroundColor: '#4285f4'
             }}
             style={{
-              fontFamily: 'Futura',
+              fontFamily: config.DEFAULT_FONT,
               fontSize: 16,
               color: '#fff'
             }}>
@@ -217,7 +214,9 @@ class AddListingModal extends Component {
   render() {
     let unitOptions = [
       {
-        label: 'Per Unit',
+        label: this.props.market.defaultUnit
+          ? `Per ${this.props.market.defaultUnit}`
+          : 'Each',
         value: 'perunit'
       },
       {
@@ -243,7 +242,7 @@ class AddListingModal extends Component {
               }}>
             
               <Text style={{
-                fontFamily: 'Futura',
+                fontFamily: config.DEFAULT_FONT,
                 fontSize: 24,
                 color: '#485a69',
                 textAlign: 'center'
@@ -261,7 +260,7 @@ class AddListingModal extends Component {
                 <Text style={{
                   textAlign: 'left',
                   fontSize: 16,
-                  fontFamily: 'Futura',
+                  fontFamily: config.DEFAULT_FONT,
                   color: '#485a69'
                 }}>
                   Title
@@ -282,7 +281,7 @@ class AddListingModal extends Component {
                     },
                     shadowRadius: 2,
                     shadowOpacity: 0.3,
-                    fontFamily: 'Futura',
+                    fontFamily: config.DEFAULT_FONT,
                     color: '#485a69'
                   }}
                   placeholder='Title of listing'
@@ -296,111 +295,129 @@ class AddListingModal extends Component {
                 <Text style={{
                   textAlign: 'left',
                   fontSize: 16,
-                  fontFamily: 'Futura',
+                  fontFamily: config.DEFAULT_FONT,
                   color: '#485a69'
                 }}>
                   Price
                 </Text>
                 
-                <TextInput
-                  style={{
-                    flex: 0,
-                    height: 35,
-                    marginTop: 5,
-                    paddingHorizontal: 10,
-                    borderColor: '#eee',
-                    borderRadius: 4,
-                    backgroundColor: '#fff',
-                    shadowColor: '#b1bbd0',
-                    shadowOffset: {
-                      width: 0,
-                      height: 3
-                    },
-                    shadowRadius: 2,
-                    shadowOpacity: 0.3,
-                    fontFamily: 'Futura',
-                    color: '#485a69'
-                  }}
-                  placeholder='Name your selling price!'
-                  value={this.state.priceValue.toString()}
-                  onChangeText={this.handlePriceChange}
-                  onBlur={() => {
-                    this.setState({
-                      priceValue: this.state.priceValue.trim().length
-                        ? parseFloat(this.state.priceValue).toFixed(2)
-                        : '0.00'
-                    });
-                  }}
-                />
-              </View>
-
-              <View style={{
-                flex: 0,
-                flexDirection: 'row',
-                justifyContent: 'center',
-                alignItems: 'center'
-              }}>
-                <SegmentedControls
-                  options={ unitOptions }
-                  selectedOption={this.state.selectedPriceOption}
-                  onSelection={ (option) => { this.setState({ selectedPriceOption: option }); } }
-                  extractText={ (option) => option.label }
-                  testOptionEqual={(a, b) => { return a.value == b.value; }}
-                />
-              </View>
-
-              {this.state.selectedPriceOption.value == 'perunit'
-                ? <View>
-                    <Text style={{
-                      textAlign: 'left',
-                      fontSize: 16,
-                      fontFamily: 'Futura',
+                <View style={{
+                  flex: 0,
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  marginTop: 5,
+                }}>
+                  <View style={{
+                    flex: 1
+                  }}>
+                  <TextInput
+                    style={{
+                      flex: 0,
+                      height: 35,
+                      paddingHorizontal: 10,
+                      borderColor: '#eee',
+                      borderRadius: 4,
+                      backgroundColor: '#fff',
+                      shadowColor: '#b1bbd0',
+                      shadowOffset: {
+                        width: 0,
+                        height: 3
+                      },
+                      shadowRadius: 2,
+                      shadowOpacity: 0.3,
+                      fontFamily: config.DEFAULT_FONT,
                       color: '#485a69'
-                    }}>
-                      Price
-                    </Text>
-                    
-                    <TextInput
-                      style={{
-                        flex: 0,
-                        height: 35,
-                        marginTop: 5,
-                        paddingHorizontal: 10,
-                        borderColor: '#eee',
-                        borderRadius: 4,
-                        backgroundColor: '#fff',
-                        shadowColor: '#b1bbd0',
-                        shadowOffset: {
-                          width: 0,
-                          height: 3
-                        },
-                        shadowRadius: 2,
-                        shadowOpacity: 0.3,
-                        fontFamily: 'Futura',
-                        color: '#485a69'
-                      }}
-                      placeholder='Unit'
-                      value={this.state.unitValue}
-                      onChangeText={this.handleUnitChange}
-                      autoCorrect={false}
-                      autoCapitalize='none'
-                      maxLength={10}
-                    />
+                    }}
+                    placeholder='Name your selling price!'
+                    value={this.state.priceValue}
+                    onChangeText={this.handlePriceChange}
+                    onBlur={() => {
+                      this.setState({
+                        priceValue: this.state.priceValue.trim().length
+                          ? parseFloat(this.state.priceValue).toFixed(2)
+                          : '0.00'
+                      });
+                    }}
+                  />
                   </View>
-                : null}
 
+                  {this.props.market.defaultUnit
+                    ? <View style={{
+                        flex: 0,
+                        justifyContent: 'center'
+                      }}>
+                        <Text style={{
+                          color: '#485a69',
+                          fontFamily: config.DEFAULT_FONT,
+                          fontSize: 18
+                        }}>
+                          / {this.props.market.defaultUnit}
+                        </Text>
+                      </View>
+                    : null}
+                </View>
+              </View>
+              
               <View style={{
-                flex: 0,
-                flexDirection: 'row',
-                justifyContent: 'center',
-                alignItems: 'center'
+                marginVertical: 10
               }}>
-                <FloatLabelTextInput
-                  keyboardType='decimal-pad'
-                  placeholder='Available Quantity'
-                  value={this.state.availQtyValue}
-                  onChangeTextValue={this.handleAvailQtyChange}
-                />
+                <Text style={{
+                  textAlign: 'left',
+                  fontSize: 16,
+                  fontFamily: config.DEFAULT_FONT,
+                  color: '#485a69'
+                }}>
+                  Available quantity
+                </Text>
+
+                <View style={{
+                  flex: 0,
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  marginTop: 5,
+                }}>
+                  <View style={{
+                    flex: 1
+                  }}>
+                  <TextInput
+                    style={{
+                      flex: 0,
+                      height: 35,
+                      paddingHorizontal: 10,
+                      borderColor: '#eee',
+                      borderRadius: 4,
+                      backgroundColor: '#fff',
+                      shadowColor: '#b1bbd0',
+                      shadowOffset: {
+                        width: 0,
+                        height: 3
+                      },
+                      shadowRadius: 2,
+                      shadowOpacity: 0.3,
+                      fontFamily: config.DEFAULT_FONT,
+                      color: '#485a69'
+                    }}
+                    placeholder="Enter the quantity you're selling"
+                    value={this.state.availQtyValue}
+                    onChangeText={this.handleAvailQtyChange}
+                  />
+                  </View>
+
+                  {this.props.market.defaultUnit
+                    ? <View style={{
+                        flex: 0,
+                        justifyContent: 'center'
+                      }}>
+                        <Text style={{
+                          color: '#485a69',
+                          fontFamily: config.DEFAULT_FONT,
+                          fontSize: 18
+                        }}>
+                          {` ${this.props.market.defaultUnit}s`}
+                        </Text>
+                      </View>
+                    : null}
+                </View>
               </View>
 
               {this.renderSubmissionError()}
@@ -427,7 +444,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff'
   },
   modalButton: {
-    fontFamily: 'Futura',
+    fontFamily: config.DEFAULT_FONT,
     fontSize: 20,
     color: '#4285f4'
   },
@@ -441,7 +458,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#4285f4'
   },
   modalButtonPrimary: {
-    fontFamily: 'Futura',
+    fontFamily: config.DEFAULT_FONT,
     fontSize: 20,
     color: '#fff'
   }

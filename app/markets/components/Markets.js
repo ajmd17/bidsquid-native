@@ -135,49 +135,55 @@ class Markets extends Component {
       <View style={{
         flex: 1
       }}>
-        <Text style={{
-          marginLeft: 10,
-          paddingTop: 10,
-          color: '#485a69',
-          fontFamily: 'Futura',
-          fontSize: 28,
-          textAlign: 'left',
+        <View style={{
+          flex: 0,
+          marginHorizontal: 10,
+          marginTop: 10,
+          backgroundColor: '#fff'
         }}>
-          Markets for {this.props.category.name}
-        </Text>
+          <Text style={{
+            marginLeft: 10,
+            paddingTop: 10,
+            color: '#485a69',
+            fontFamily: config.DEFAULT_FONT,
+            fontSize: 24,
+            textAlign: 'left',
+          }}>
+            Markets for {this.props.category.name}
+          </Text>
 
-        <Text style={{
-          marginLeft: 10,
-          color: '#86929b',
-          fontFamily: 'Futura',
-          fontSize: 15,
-        }}>
-          {this.props.geo.name}, {this.props.geo.provinceCode}
-        </Text>
+          <Text style={{
+            marginLeft: 10,
+            color: '#86929b',
+            fontFamily: config.DEFAULT_FONT,
+            fontSize: 15,
+          }}>
+            {this.props.geo.name}, {this.props.geo.provinceCode}
+          </Text>
 
-        <TextInput
-          style={{
-            height: 35,
-            marginHorizontal: 10,
-            marginVertical: 10,
-            paddingHorizontal: 10,
-            borderColor: '#eee',
-            borderRadius: 4,
-            backgroundColor: '#fff',
-            shadowColor: '#b1bbd0',
-            shadowOffset: {
-              width: 0,
-              height: 3
-            },
-            shadowRadius: 2,
-            shadowOpacity: 0.3,
-            fontFamily: 'Futura',
-            color: '#485a69'
-          }}
-          onChangeText={(text) => this.setState({ searchValue: text })}
-          value={this.state.searchValue}
-          placeholder='Search markets by name...'
-        />
+          <TextInput
+            style={{
+              height: 35,
+              marginHorizontal: 10,
+              marginVertical: 10,
+              borderColor: '#eee',
+              borderRadius: 4,
+              backgroundColor: '#fff',
+              shadowColor: '#b1bbd0',
+              shadowOffset: {
+                width: 0,
+                height: 3
+              },
+              shadowRadius: 2,
+              shadowOpacity: 0.3,
+              fontFamily: config.DEFAULT_FONT,
+              color: '#485a69'
+            }}
+            onChangeText={(text) => this.setState({ searchValue: text })}
+            value={this.state.searchValue}
+            placeholder='Search markets by name...'
+          />
+        </View>
 
         {this.state.markets == null
           ? <ActivityIndicator
@@ -195,7 +201,7 @@ class Markets extends Component {
           <TouchableHighlight>
             <Text style={{
             color: '#86929b',
-            fontFamily: 'Futura',
+            fontFamily: config.DEFAULT_FONT,
             fontSize: 18
           }}>
             HOT

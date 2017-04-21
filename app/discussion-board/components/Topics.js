@@ -7,12 +7,14 @@ import {
   Text,
   TextInput,
   TouchableHighlight,
+  TouchableOpacity,
   View
 } from 'react-native';
 import Button from 'react-native-button';
 import InViewport from '../../components/InViewport';
 
 import TopicItem from './TopicItem';
+import NewTopicModal from './NewTopicModal';
 import LoginModal from '../../login/components/LoginModal';
 
 import config from '../../config';
@@ -41,6 +43,7 @@ class Topics extends Component {
       loading: true,
       showingNewTopicModal: false,
       showingLoginModal: false,
+      accessToken: null
     };
   }
 
@@ -73,22 +76,22 @@ class Topics extends Component {
   }
 
   handleCreateTopicPress = () => {
-    AsyncStorage.getItem('saved uid')
-    .then(JSON.parse)
-    .then((json) => {
-      console.log('got saved uid:', json);
-      if (json == null) {
+    AsyncStorage.getItem('access token').then((token) => {
+      console.log('got access token:', token);
+      if (token == null) {
         // show login modal, uid not set
         this.setState({
           showingLoginModal: true
         });
       } else {
         // show new topic modal
-        this.setState({ showingNewTopicModal: true });
+        this.setState({
+          showingNewTopicModal: true,
+          accessToken: token
+        });
       }
-    })
-    .catch((err) => {
-      console.error('Error loading saved uid:', err);
+    }).catch((err) => {
+      console.error('Error loading access token:', err);
     });
   };
 
@@ -127,19 +130,21 @@ class Topics extends Component {
 
   renderNewTopicModal() {
     if (this.state.showingNewTopicModal) {
-      /*return (
-        <AddListingModal
-          onAdded={(listing) => {
+      return (
+        <NewTopicModal
+          accessToken={this.state.accessToken}
+          market={this.props.market}
+          onAdded={(topic) => {
             this.setState({
-              showingAddListingModal: false,
-              listings: (this.state.listings || []).concat([listing])
+              showingNewTopicModal: false,
+              topics: (this.state.topics || []).concat([topic])
             });
           }}
           onModalClose={() => {
-            this.setState({ showingAddListingModal: false });
+            this.setState({ showingNewTopicModal: false });
           }}
         />
-      );*/
+      );
     }
   }
 
@@ -147,11 +152,13 @@ class Topics extends Component {
     if (this.state.showingLoginModal) {
       return (
         <LoginModal
-          onLoginSuccess={() => {
+          message='To create topics and participate in discussions, sign in to an account.'
+          onLoginSuccess={(token) => {
             // show 'new topic' modal after login success
             this.setState({
               showingLoginModal: false,
-              showingNewTopicModal: true
+              showingNewTopicModal: true,
+              accessToken: token
             });
           }}
           onModalClose={() => {
@@ -164,19 +171,48 @@ class Topics extends Component {
 
   renderTopics() {
     if (this.state.topics != null) {
-      return (
-        <ScrollView>
-          {this.state.topics.map((el, i) => {
-            return (
-              <TopicItem
-                topic={el}
-                key={i}
-              />
-            );
-          })}
-          <InViewport onChange={this.loadMore}/>
-        </ScrollView>
-      );
+      if (this.state.topics.length != 0) {
+        return (
+          <ScrollView>
+            {this.state.topics.map((el, i) => {
+              console.log(el);
+              return (
+                <TopicItem
+                  topic={el}
+                  key={i}
+                />
+              );
+            })}
+          </ScrollView>
+        );
+      } else {
+        return (
+          <View style={{
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}>
+            <Text style={{
+              fontSize: 24,
+              fontFamily: config.DEFAULT_FONT,
+              color: '#485a69',
+              textAlign: 'center'
+            }}>
+              No topics in this market yet.
+            </Text>
+            <TouchableOpacity onPress={this.handleCreateTopicPress}>
+              <Text style={{
+                fontSize: 24,
+                fontFamily: config.DEFAULT_FONT,
+                color: '#0ab498',
+                textAlign: 'center'
+              }}>
+                Create a new topic
+              </Text>
+            </TouchableOpacity>
+          </View>
+        );
+      }
     }
   }
 
@@ -186,75 +222,85 @@ class Topics extends Component {
         flex: 1
       }}>
         <View style={{
-          flex: 0,
-          flexDirection: 'row',
-          justifyContent: 'space-between',
+
           marginHorizontal: 10,
-          paddingTop: 10,
+          marginTop: 10,
+          backgroundColor: '#fff'
         }}>
-        
-          <Text style={{
-            color: '#485a69',
-            fontFamily: 'Futura',
-            fontSize: 28,
-            textAlign: 'left',
+          <View style={{
+            flex: 0,
+            flexDirection: 'row',
+            justifyContent: 'space-around',
+            marginHorizontal: 10,
+            paddingTop: 10
           }}>
-            Topics for {this.props.market.name}
+
+            <View style={{ flex: 1 }}>
+              <Text style={{
+                color: '#485a69',
+                fontFamily: config.DEFAULT_FONT,
+                fontSize: 24,
+                textAlign: 'left',
+              }}>
+                Topics for {this.props.market.name}
+              </Text>
+            </View>
+
+            <View>
+              <Button
+                onPress={this.handleCreateTopicPress}
+                containerStyle={{
+                  flex: 0,
+                  justifyContent: 'center',
+                  padding: 5,
+                  borderRadius: 3,
+                  borderWidth: 1,
+                  borderColor: '#0ab498',
+                  backgroundColor: '#48B9A6'
+                }}
+                style={{
+                  fontFamily: config.DEFAULT_FONT,
+                  fontSize: 16,
+                  color: '#fff'
+                }}>
+                + Create Topic
+              </Button>
+            </View>
+          </View>
+
+          <Text style={{
+            marginLeft: 10,
+            color: '#86929b',
+            fontFamily: config.DEFAULT_FONT,
+            fontSize: 15,
+          }}>
+            {this.props.geo.name}, {this.props.geo.provinceCode}
           </Text>
 
-
-          <Button
-            onPress={this.handleCreateTopicPress}
-            containerStyle={{
-              flex: 0,
-              justifyContent: 'center',
-              padding: 5,
-              borderRadius: 3,
-              borderWidth: 1,
-              borderColor: '#0ab498',
-              backgroundColor: '#48B9A6'
-            }}
+          <TextInput
             style={{
-              fontFamily: 'Futura',
-              fontSize: 16,
-              color: '#fff'
-            }}>
-            + Create Topic
-          </Button>
+              height: 35,
+              marginHorizontal: 10,
+              marginVertical: 10,
+              paddingHorizontal: 10,
+              borderColor: '#eee',
+              borderRadius: 4,
+              backgroundColor: '#fff',
+              shadowColor: '#b1bbd0',
+              shadowOffset: {
+                width: 0,
+                height: 3
+              },
+              shadowRadius: 2,
+              shadowOpacity: 0.3,
+              fontFamily: config.DEFAULT_FONT,
+              color: '#485a69'
+            }}
+            onChangeText={(text) => this.setState({ searchValue: text })}
+            value={this.state.searchValue}
+            placeholder='Search topics...'
+          />
         </View>
-
-        <Text style={{
-          marginLeft: 10,
-          color: '#86929b',
-          fontFamily: 'Futura',
-          fontSize: 15,
-        }}>
-          {this.props.geo.name}, {this.props.geo.provinceCode}
-        </Text>
-
-        <TextInput
-          style={{
-            height: 35,
-            marginHorizontal: 10,
-            marginVertical: 10,
-            paddingHorizontal: 10,
-            borderColor: '#eee',
-            borderRadius: 4,
-            backgroundColor: '#fff',
-            shadowColor: '#b1bbd0',
-            shadowOffset: {
-              width: 0,
-              height: 3
-            },
-            shadowRadius: 2,
-            shadowOpacity: 0.3,
-            fontFamily: 'Futura',
-            color: '#485a69'
-          }}
-          onChangeText={(text) => this.setState({ searchValue: text })}
-          value={this.state.searchValue}
-          placeholder='Search topics...'
-        />
 
         {this.state.topics == null
           ? <ActivityIndicator

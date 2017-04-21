@@ -10,6 +10,8 @@ import {
   View
 } from 'react-native';
 
+import config from '../../config';
+
 
 class ListingItem extends Component {
   static propTypes = {
@@ -47,7 +49,7 @@ class ListingItem extends Component {
             paddingVertical: 5,
             paddingHorizontal: 10,
             fontSize: 26,
-            fontFamily: 'Futura',
+            fontFamily: config.DEFAULT_FONT,
             color: '#0ab498'
           }}>
             {this.props.listing.title}
@@ -58,14 +60,14 @@ class ListingItem extends Component {
           }}>
             <Text style={{
               fontSize: 18,
-              fontFamily: 'Futura',
+              fontFamily: config.DEFAULT_FONT,
               color: '#485a69'
             }}>
               Price: ${this.props.listing.price}
             </Text>
             <Text style={{
               fontSize: 18,
-              fontFamily: 'Futura',
+              fontFamily: config.DEFAULT_FONT,
               color: '#485a69'
             }}>
               Available Quantity: {this.props.listing.availQty}

@@ -21,10 +21,25 @@ import events from '../../events';
 import config from '../../config';
 
 
+const NUM_CATEGORIES_PER_LOAD = 10;
+
+function filterCategories(categories, query) {
+  return categories.filter((el) => {
+    if (el.name.toLowerCase().indexOf(query) != -1) {
+      return true;
+    } else if (el.subcategories != null && el.subcategories.length != 0) {
+      return filterCategories(el.subcategories, query).length != 0;
+    } else {
+      return false;
+    }
+  });
+}
+
 class Categories extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      visibleCategories: null,
       categories: null,
       selectedCategory: null,
       geo: null,
@@ -37,17 +52,39 @@ class Categories extends Component {
 
   componentDidMount() {
     // load categories from server
-    fetch(`${config.API_SERVER_URL}/api/categories/all/0/10`)
+    fetch(`${config.API_SERVER_URL}/api/categories/all/0/${NUM_CATEGORIES_PER_LOAD}`)
     .then((response) => response.json())
     .then((json) => {
+      let categories = json.categories.sort((a, b) => {
+        if (b.subcategories == null) {
+          return -1;
+        }
+        if (a.subcategories == null) {
+          return 1;
+        }
+        return b.subcategories.length - a.subcategories.length;
+      });
+
       this.setState({
-        categories: json.categories
+        categories: categories,
+        visibleCategories: filterCategories(categories, this.state.searchValue)
       });
     })
     .catch((err) => {
       console.error(err);
     });
   }
+
+  handleSearchValueChange = (text) => {
+    this.setState({ searchValue: text });
+
+    // query the categories
+    if (this.state.categories != null) {
+      this.setState({
+        visibleCategories: filterCategories(this.state.categories, text)
+      });
+    }
+  };
 
   handleCategoryPress = (category) => {
     AsyncStorage.getItem('saved geo')
@@ -93,12 +130,12 @@ class Categories extends Component {
   };
 
   renderCategories() {
-    if (this.state.categories != null) {
+    if (this.state.visibleCategories != null) {
       return (
         <ScrollView style={{
           backgroundColor: '#f7f8fa'
         }}>
-          {this.state.categories.map((el, i) => {
+          {this.state.visibleCategories.map((el, i) => {
             return (
               <Category
                 category={el}
@@ -160,40 +197,46 @@ class Categories extends Component {
       <View style={{
         flex: 1
       }}>
-        <Text style={{
-          marginLeft: 10,
-          paddingTop: 10,
-          color: '#485a69',
-          fontFamily: 'Futura',
-          fontSize: 28,
-          textAlign: 'left',
+        <View style={{
+          flex: 0,
+          marginHorizontal: 10,
+          marginTop: 10,
+          backgroundColor: '#fff'
         }}>
-          Categories
-        </Text>
+          <Text style={{
+            marginLeft: 10,
+            paddingTop: 10,
+            color: '#485a69',
+            fontSize: 24,
+            textAlign: 'left',
+            fontFamily: config.DEFAULT_FONT,
+          }}>
+            Categories
+          </Text>
 
-        <TextInput
-          style={{
-            height: 35,
-            marginHorizontal: 10,
-            marginVertical: 10,
-            paddingHorizontal: 10,
-            borderColor: '#eee',
-            borderRadius: 4,
-            backgroundColor: '#fff',
-            shadowColor: '#b1bbd0',
-            shadowOffset: {
-              width: 0,
-              height: 3
-            },
-            shadowRadius: 2,
-            shadowOpacity: 0.3,
-            fontFamily: 'Futura',
-            color: '#485a69'
-          }}
-          onChangeText={(text) => this.setState({ searchValue: text })}
-          value={this.state.searchValue}
-          placeholder='Search categories by name...'
-        />
+          <TextInput
+            style={{
+              height: 35,
+              marginHorizontal: 10,
+              marginVertical: 10,
+              borderColor: '#eee',
+              borderRadius: 4,
+              backgroundColor: '#fff',
+              shadowColor: '#b1bbd0',
+              shadowOffset: {
+                width: 0,
+                height: 3
+              },
+              shadowRadius: 2,
+              shadowOpacity: 0.3,
+              fontFamily: config.DEFAULT_FONT,
+              color: '#485a69'
+            }}
+            onChangeText={this.handleSearchValueChange}
+            value={this.state.searchValue}
+            placeholder='Search categories by name...'
+          />
+        </View>
 
         {this.state.categories == null
           ? <ActivityIndicator

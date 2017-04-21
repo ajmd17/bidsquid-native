@@ -64,6 +64,7 @@ class Listings extends Component {
     if (this.state.showingAddListingModal) {
       return (
         <AddListingModal
+          market={this.props.market}
           onAdded={(listing) => {
             this.setState({
               showingAddListingModal: false,
@@ -98,80 +99,88 @@ class Listings extends Component {
   render() {
     return (
       <View style={{
-        flex: 1
+        flex: 0,
       }}>
-
-
         <View style={{
-          flex: 0,
-          flexDirection: 'row',
-          justifyContent: 'space-between',
           marginHorizontal: 10,
-          paddingTop: 10,
+          marginTop: 10,
+          backgroundColor: '#fff'
         }}>
-        
-          <Text style={{
-            color: '#485a69',
-            fontFamily: 'Futura',
-            fontSize: 28,
-            textAlign: 'left',
+          <View style={{
+            flex: 0,
+            flexDirection: 'row',
+            justifyContent: 'space-around',
+            marginHorizontal: 10,
+            paddingTop: 10,
           }}>
-            Listings for {this.props.market.name}
+
+            <View style={{ flex: 1 }}>
+          
+              <Text style={{
+                color: '#485a69',
+                fontFamily: config.DEFAULT_FONT,
+                fontSize: 24,
+                textAlign: 'left',
+              }}>
+                Listings for {this.props.market.name}
+              </Text>
+            </View>
+
+            <View>
+              <Button
+                onPress={() => {
+                  this.setState({ showingAddListingModal: true });
+                }}
+                containerStyle={{
+                  flex: 0,
+                  justifyContent: 'center',
+                  padding: 5,
+                  borderRadius: 3,
+                  backgroundColor: '#0ab498'
+                }}
+                style={{
+                  fontFamily: config.DEFAULT_FONT,
+                  fontSize: 16,
+                  color: '#fff'
+                }}>
+                + Add Listing
+              </Button>
+            </View>
+          </View>
+
+          <Text style={{
+            marginLeft: 10,
+            color: '#86929b',
+            fontFamily: config.DEFAULT_FONT,
+            fontSize: 15,
+          }}>
+            {this.props.geo.name}, {this.props.geo.provinceCode}
           </Text>
 
-
-          <Button
-            onPress={() => {
-              this.setState({ showingAddListingModal: true });
-            }}
-            containerStyle={{
-              flex: 0,
-              justifyContent: 'center',
-              padding: 5,
-              borderRadius: 3,
-              backgroundColor: '#77c350'
-            }}
+          <TextInput
             style={{
-              fontFamily: 'Futura',
-              fontSize: 16,
-              color: '#fff'
-            }}>
-            + Add Listing
-          </Button>
+              height: 35,
+              marginHorizontal: 10,
+              marginVertical: 10,
+              borderColor: '#eee',
+              borderRadius: 4,
+              backgroundColor: '#fff',
+              shadowColor: '#b1bbd0',
+              shadowOffset: {
+                width: 0,
+                height: 3
+              },
+              shadowRadius: 2,
+              shadowOpacity: 0.3,
+              fontFamily: config.DEFAULT_FONT,
+              color: '#485a69'
+            }}
+            onChangeText={(text) => this.setState({ searchValue: text })}
+            value={this.state.searchValue}
+            placeholder='Search listings...'
+          />
+
         </View>
-
-        <Text style={{
-          marginLeft: 10,
-          color: '#86929b',
-          fontFamily: 'Futura',
-          fontSize: 15,
-        }}>
-          {this.props.geo.name}, {this.props.geo.provinceCode}
-        </Text>
-
-        <TextInput
-          style={{
-            height: 35,
-            marginHorizontal: 10,
-            marginVertical: 10,
-            paddingHorizontal: 10,
-            borderColor: '#eee',
-            borderRadius: 4,
-            backgroundColor: '#fff',
-            shadowColor: '#b1bbd0',
-            shadowOffset: {
-              width: 0,
-              height: 3
-            },
-            shadowRadius: 2,
-            shadowOpacity: 0.3,
-            fontFamily: 'Futura',
-            color: '#485a69'
-          }}
-          onChangeText={(text) => this.setState({ searchValue: text })}
-          value={this.state.searchValue}
-          placeholder='Search listings...'
-        />
 
         {this.state.listings == null
           ? <ActivityIndicator
